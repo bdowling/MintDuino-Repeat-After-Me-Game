@@ -85,6 +85,9 @@ void output()
 ///////////////////////////////////////////////////////////////////////////
 void ProcessSingleInput(int value, int x)
 {
+  
+  counter = 0;  // XXX Reset timeout counter because a button was pressed
+  
   digitalWrite(LEDROOT + value, HIGH);
   playTone(tonearray[value], 200); // Passes tone value and duration of the tone to the playTone function
   delay(200);
@@ -103,22 +106,14 @@ void ProcessSingleInput(int value, int x)
 // Function for allowing user input and checking input against the generated array
 void input()
 {
+  counter = 0;  // Reset timeout counter at start of round
+
   for (int x=0; x <= turn;)
   {
     input1 = digitalRead(SWITCHROOT);
     input2 = digitalRead(SWITCHROOT+1);
     input3 = digitalRead(SWITCHROOT+2);
     input4 = digitalRead(SWITCHROOT+3);
-
-    counter++;
-      
-    if (counter > RESPONSETIME)
-    {
-      Serial.println("TIMEOUT!");
-      fail(randomArray[x]);
-      counter = 0;
-      x++;
-    }
     
     delay(1);
 
@@ -146,8 +141,18 @@ void input()
       x++;
     }
 
+    counter++;
+      
+    if (counter > RESPONSETIME)
+    {
+      Serial.println("TIMEOUT!");
+      fail(randomArray[x]);
+      counter = 0;
+      x++;
+    }
+ 
    }
-  
+      
   delay(500);
   
   turn++; // Increments the turn count, also the last action before starting the output function over again
@@ -316,3 +321,4 @@ void loop()
  win();
  
 }
+
